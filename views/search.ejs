@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Search <%=shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="main.css" />
+  </head>
+  <body>
+    <h1>Search <%=shopName%></h1>
+    <form action="/search-result" method="GET">
+      <p>What book do you want?</p>
+      <input id="search-box" type="text" name="keyword" value="">
+      <input type="submit" value="Search" >
+    </form>
+   <!-- Redirects to home page -->
+    <p><a href="/">home page</a></p>
+  </body>
+</html>
