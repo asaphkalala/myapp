@@ -22,7 +22,7 @@ module.exports = function(app, shopData) {
         res.render('about.ejs', shopData);
     });
     //const redirectLogin is added as a parameter the following pages that require users to be logged in.
-    app.get('/search',redirectLogin,function(req,res){
+    app.get('/search',function(req,res){
         res.render("search.ejs", shopData);
     });
 
@@ -30,32 +30,139 @@ module.exports = function(app, shopData) {
         res.render('login.ejs', shopData)
     });
 
-    app.get('/search-result',[check('name').isEmpty()],function (req, res) {
-
-        //searching in the database
-        //res.send("You searched for: " + req.query.keyword);
-
+//Validation checj if search is empty if it is then it redirects back to the search page 
+    app.get('/search-result',[check('keyword').notEmpty()],function (req, res) {
         const errors = validationResult(req); 
+
         if (!errors.isEmpty()) {
            res.redirect('./search'); }
         else {
-            let sqlquery = "SELECT * FROM books WHERE name LIKE '%" + req.query.keyword + "%'"; // query database to get all the books
+            let sqlquery = "SELECT * FROM shop WHERE name LIKE '%" + req.sanitize(req.query["keyword"]) + "%'"; // query database to get all the books
             // execute sql query
             db.query(sqlquery, (err, result) => {
                 if (err) {
                     res.redirect('./'); 
+                } 
+                if (result[0] === undefined) {
+                    res.send('No matching food has been found. Click <a href=' + '/search-food' + '>here</a> to go back to the search page or <a href=' + './' + '>here</a> to go back to the home page.');
+                } else {
+                    let newData = Object.assign({}, shopData, {availableFood: result});
+                    res.render("list.ejs", newData);
                 }
-                let newData = Object.assign({}, shopData, {availableBooks:result});
-                console.log(newData)
-                res.render("list.ejs", newData)
+                
             }); 
         }
 
        
     });
+
+    app.get('/delete-food', function (req,res) {
+        let sqlquery = "DELETE FROM shop WHERE foodID=?"; // query database to delete only the food with the id to match which was searched
+        // execute sql query
+        var id = req.query.id;
+        db.query(sqlquery, [id],(err, result) => {
+            if (err) {
+                res.redirect('./'); 
+            }
+            //message is sent if food is deleted
+            res.send('This food item has been successfully deleted. Click <a href=' + './' + '>here</a> to go back to the home page.');
+         });
+        
+                                                                    
+    }); 
+
+    app.get('/update-food',function(req,res){ 
+        let sqlQuery = "SELECT * FROM shop WHERE foodID=?"; // query database to update  the food with the id to match which was searched
+        var id = req.query.id;
+
+        db.query(sqlQuery, [id],function(err, result) {
+            if (err) {
+                return console.error(err.message);
+            }
+            let newData = Object.assign({}, shopData, {availableFood:result});
+            res.render("update-food.ejs",newData);
+        });
+
+
+    });
+
+
+    app.post('/update-food',function(req,res){
+
+        var name = req.sanitize(req.body.name);
+        var value = req.sanitize(req.body.values_per); 
+        var unit = req.sanitize(req.body.unit_value);
+        var carbs = req.sanitize(req.body.carbs); 
+        var fat = req.sanitize(req.body.fat); 
+        var protein = req.sanitize(req.body.protein); 
+        var salt = req.sanitize(req.body.salt); 
+        var sugar = req.sanitize(req.body.sugar); 
+        var id = req.sanitize(req.body.id);
+         
+
+        let newrecord = [name,value,unit,carbs,fat,protein,salt,sugar,id];
+ 
+        //query database to update the inputted values into the respected food 
+        let sqlQuery = "UPDATE shop set name=?, values_per=?,unit_value=?,carbs=?,fat=?,protein=?,salt=?,sugar=? where foodID=?";
+
+        db.query(sqlQuery, newrecord,(err, result,rows, fields) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            res.redirect("./updatelist")
+
+        });
+
+    });
+
+
+    app.get('/search-update',redirectLogin,function(req,res){
+        res.render('search-update.ejs', shopData)
+    });
+
+    //identical to search except it redirects to updatelist.ejs which has a delete and update function 
+    app.get('/update-search',[check('keyword').notEmpty()],function (req, res) {
+        const errors = validationResult(req); 
+        
+        if (!errors.isEmpty()) {
+           res.redirect('./search-update '); }
+        else {
+            let sqlquery = "SELECT * FROM shop WHERE name LIKE '%" + req.sanitize(req.query["keyword"]) + "%'"; // query database to get all the food that was searched
+            // execute sql query
+            db.query(sqlquery, (err, result) => {
+                if (err) {
+                    res.redirect('./'); 
+                }else {
+                    let newData = Object.assign({}, shopData, {availableFood: result});
+                    res.render("updatelist.ejs", newData);
+                }
+            }); 
+        }
+
+    });
+
+
     app.get('/register', function (req,res) {
         res.render('register.ejs', shopData);                                                                     
     }); 
+
+    app.get('/updatelist', function (req,res) {
+
+        let sqlquery = "SELECT * FROM shop"; // query database to get all the food from shop 
+        // execute sql query
+        db.query(sqlquery, (err, result) => {
+            if (err) {
+                res.redirect('./'); 
+            }
+            let newData = Object.assign({}, shopData, {availableFood:result});
+            console.log(newData)
+            res.render("updatelist.ejs", newData)
+         }); 
+                                                                    
+    }); 
+
+
+
 
 // validation for email to check if it includes and @
 // validation for first name last name and username to make sure its not empty 
@@ -105,70 +212,52 @@ module.exports = function(app, shopData) {
 
    
 
-   
 
 
     //const redirectLogin is added as a parameter the following pages that require users to be logged in.
-    app.get('/list', redirectLogin,function(req, res) {
-        let sqlquery = "SELECT * FROM books"; // query database to get all the books
+    app.get('/list',redirectLogin,function(req, res) {
+        let sqlquery = "SELECT * FROM shop"; // query database to get all the books
         // execute sql query
         db.query(sqlquery, (err, result) => {
             if (err) {
                 res.redirect('./'); 
             }
-            let newData = Object.assign({}, shopData, {availableBooks:result});
+            let newData = Object.assign({}, shopData, {availableFood:result});
             console.log(newData)
             res.render("list.ejs", newData)
          });
     });
 
-    //const redirectLogin is added as a parameter the following pages that require users to be logged in.
-    app.get('/addbook',redirectLogin ,function (req, res) {
-        res.render('addbook.ejs', shopData);
+
+    app.get('/addfood',redirectLogin ,function (req, res) {
+        res.render('addfood.ejs', shopData);
      });
 
-     //Book added secction, inserting into the books table with fields name and price
-     //Checks if the price value is a float
-     app.post('/bookadded', [check('price').isFloat()],
-                            [check('name').isAlpha('en-US', {ignore: ' '})],function (req,res) {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                res.redirect('./addbook'); }
-                                
-            else {
-                           // saving data in database
-           let sqlquery = "INSERT INTO books (name, price) VALUES (?,?)";
-           
 
-           //sanitizing newrecord  in delete  
-           let newrecord = [req.sanitize(req.body.name), req.sanitize(req.body.price)];
-           // execute sql query
-           db.query(sqlquery, newrecord, (err, result) => {
-             if (err) {
-               return console.error(err.message);
-             }
-             else
-             res.send(' This book is added to database, name: '+ req.body.name + ' price '+ req.body.price +" <a href='+'./'+'>Home</a>");
-             });
+    app.post('/foodadded', function (req,res) {
 
+        // saving data in database
+        let sqlquery = "INSERT INTO shop (name,values_per,unit_value,carbs,fat,protein,salt,sugar) VALUES (?,?,?,?,?,?,?,?)";
+        
+
+        //sanitizing newrecord in food added
+        let newfood = [req.sanitize(req.body.name),req.sanitize(req.body.values_per), 
+                        req.sanitize(req.body.unit_value),req.sanitize(req.body.carbs), 
+                        req.sanitize(req.body.fat),req.sanitize(req.body.protein),
+                        req.sanitize(req.body.salt), req.sanitize(req.body.sugar)];  
+        //adding the inputted food in our database
+        db.query(sqlquery, newfood, (err, result) => {
+            if (err) { 
+                return console.error(err.message);
+            }
+            else{
+                let newData = Object.assign({}, shopData, {foodAdded: newfood});
+                res.render("food-added.ejs", newData);
             }
 
-
+        });
 
 });  
-
-    //const redirectLogin is added as a parameter the following pages that require users to be logged in.
-       app.get('/bargainbooks',redirectLogin ,function(req, res) {
-        let sqlquery = "SELECT * FROM books WHERE price < 20";
-        db.query(sqlquery, (err, result) => {
-          if (err) {
-             res.redirect('./');
-          }
-          let newData = Object.assign({}, shopData, {availableBooks:result});
-          console.log(newData)
-          res.render("bargains.ejs", newData)
-        });
-    });
     //const redirectLogin is added as a parameter the following pages that require users to be logged in.
     app.get('/listusers',redirectLogin,function(req, res){
         // query database to get all the books
@@ -186,39 +275,8 @@ module.exports = function(app, shopData) {
          });
 
     })
-    app.get('/deleteuser',redirectLogin,function(req,res){
-        res.render("deleteuser.ejs", shopData);
-    });
-// Validation for delete to see if username is blank
-    app.post('/delete',[check('username').notEmpty()],function(req,res){
-        const errors = validationResult(req); 
-         if (!errors.isEmpty()) {
-            res.redirect('./deleteuser'); }
-        else {
-            //sanitizing username in delete 
-            const username = req.sanitize(req.body.username);
-            let sqlQuery = "DELETE FROM userdata WHERE username='"+username+"'";
-            
-            
 
-            db.query(sqlQuery, (err, result) => {
-                if(err) {
-                    return console.log("Error on the deleteUser path: ", err);
-                }
-                if(result.affectedRows==0){
-                    res.send("User doesn't exsist ")
-                }
-                else{
-                    res.render('delete.ejs',shopData)
-                }
-                
     
-            });
-
-        }
-
-
-    });
 
     app.get('/login',function(req,res){
         // Saves user session, given log in is successful
@@ -230,20 +288,18 @@ module.exports = function(app, shopData) {
     app.post('/loggedin',[check('username').notEmpty()],
                          [check('password').isLength({min: 8, max: 50})], function(req,res){
         const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.redirect('./login'); }
-        else {
-            let sqlQuery = "SELECT * FROM userdata WHERE username='"+req.sanitize(req.body.username)+"'";
-            req.session.userId = req.sanitize(req.body.username);
-        
-        
-            db.query(sqlQuery, function (err, result) {
+        let sqlQuery = "SELECT * FROM userdata WHERE username='"+req.sanitize(req.body.username)+"'";
+        req.session.userId = req.sanitize(req.body.username);
+
+
+        db.query(sqlQuery,  (err, result) => {
+            if (err) {
+                return console.log(err.message);
+            }
+            else if( result[0] == undefined){
+                res.render("incorrect.ejs",shopData);
+            }else{
                 let hashedpassword = result[0].hashedPassword;
-                console.log('result', result[0]);
-                if(err) {
-                    res.redirect("./");
-                }
-                
                 
                 bcrypt.compare(req.body.password,hashedpassword, function(err,result){
                     if(err){
@@ -253,13 +309,15 @@ module.exports = function(app, shopData) {
                         res.redirect("./correct");
                     }
                     else{
-                        res.redirect("./incorrect");
+                        res.render("./incorrect");
                     }
                 
                 });
-            });
 
-        }
+            }
+        });
+        
+
 
 });
     app.get('/correct',function(req,res){
@@ -283,48 +341,14 @@ module.exports = function(app, shopData) {
         })
     })
 
-    app.get('/weather',function(req,res){
-        res.render("weather.ejs", shopData);
-    });
-
-    app.get('/weather-search',function(req,res){
-
-        const request = require('request');
-        //unique api key that was generated by open weather api
-        let apiKey = 'c0e4b57c150bd75364ae158a5fc4ec62';
-        //url that will be used to draw data from api
-        let url =`http://api.openweathermap.org/data/2.5/weather?q=${req.query.city}&units=metric&appid=${apiKey}`
-        request(url, function (err, response, body) {
-            if(err){
-                console.log('error:', error);
-            } else {
-                
-                let weather = JSON.parse(body)
-                //validation if there is nothing store in weather from the city they entered then it shows an error message.
-                if (weather!==undefined && weather.main!==undefined) {
-                    //combining all the information to display 
-                    let wmsg = "<center><h1><font color = 3289a8><font size = +2>"+'It is '+ weather.main.temp +
-                    ' degrees in '+ weather.name +'! <br> The humidity now is: '+weather.main.humidity+"%"+ " <br> The wind speed is: " 
-                    + weather.wind.speed + "mph" +" <br> The wind degree is: " + weather.wind.deg+"</h1>";
-                    return res.send ("<h1><font-family: Arial, Helvetica, sans-serif>"+wmsg+"<br>"+"<a href= ./  >Back</a>"+"</h1></center>");
-                }
-                else {
-                    return res.send ("No data found"+"<br>"+ "<a href= ./weather>Back</a>");
-                };
-
-            }
-            });
-
-
-    });
 
     app.get('/api', function (req, res) {
         res.render("api.ejs",shopData);
     });
-    
+
     app.get('/api-list', function (req,res) {
         // Query database to get all the books
-        let sqlquery = "SELECT * FROM books";
+        let sqlquery = "SELECT * FROM shop";
         // Execute the sql query
         db.query(sqlquery, (err, result) => {
         if (err) {
@@ -334,24 +358,24 @@ module.exports = function(app, shopData) {
         res.json(result);
         });
     });
+    
 
-
-// I do not have contact details of anyone on the course to do the api extension 
     app.get('/api-search',[check('name').isEmpty()], function (req,res) {
         const errors = validationResult(req); 
         const keyword = req.sanitize(req.body.book);
         if (!errors.isEmpty()) {
            res.redirect('./search'); }
         else {
-            let sqlquery = "SELECT * FROM books WHERE name LIKE '%" + req.query.keyword + "%'"; // query database to get all the books
+            let sqlquery = "SELECT * FROM shop WHERE name LIKE '%" + req.query.keyword + "%'"; // query database to get all the books
             // execute sql query
             db.query(sqlquery, (err, result) => {
                 if (err) {
                     res.redirect('./'); 
                 }
-                let newData = Object.assign({}, shopData, {availableBooks:result});
+                let newData = Object.assign({}, shopData, {availableFood:result});
                 console.log(newData)
-                res.render("list.ejs", newData)
+                // Return results as a JSON object
+                res.json(result);
             }); 
         }
 
@@ -359,44 +383,6 @@ module.exports = function(app, shopData) {
 
 
 
-
-
-    app.get('/movies',function(req,res){
-        res.render("movies.ejs", shopData);
-    });
-
-    app.get('/movie-search',function(req,res){
-
-        const request = require('request');
-         //url that will be used to draw data from api
-        let url =` https://api.tvmaze.com/singlesearch/shows?q=${req.query.name}`
-        request(url, function (err, response, body) {
-            if(err){
-                console.log('error:', error);
-            } else {
-                let search = JSON.parse(body);
-                //validation if there is nothing stored in search from the movie they entered then it shows an error message.
-                if (search !==undefined && search !== null) {
-                    let wmsg = "<h1> <font-family: Arial, Helvetica, sans-serif><font color = 3289a8> Name of show: " + search.name + 
-                    "<br>Type of show: " +search.type  +"<br>Genres of show: "+search.genres +" <br>Average runtime: "+ search.runtime+
-                    "<br> Average rating: "+search.rating.average +"</h1>";
-                    return res.send ("<h1><font-family: Arial, Helvetica, sans-serif>"+wmsg+"<br>"+"<a href= ./  >Back</a>"+"</h1>");
-                }
-                else {
-                    return res.send ("<h1><font-family: Arial, Helvetica, sans-serif> No data found"+"<br>"+ "<a href= ./movies>Back</a> </h1>");
-                };
-            }
-            });
-
-
-    });
-
-
-
-
-
-
-//
     
 
 }

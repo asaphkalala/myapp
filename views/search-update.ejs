@@ -1,3 +1,4 @@
+<!-- The page which lets users search for a food -->
 <!doctype html>
 <html>
   <head>
@@ -6,10 +7,10 @@
   </head>
   <body>
     <h1>Search <%=shopName%></h1>
-    <form action="/search-result" method="GET">
-      <p>What food are you trying to find?</p>
+    <form action="/update-search" method="GET">
+      <p>What food are you trying to find to update or delete?</p>
       <input id="search-box" type="text" name="keyword" value="">
-      <input type="submit" value="Search" >
+      <input type="submit" value="Search">
     </form>
    <!-- Redirects to home page -->
     <p><a href="/">home page</a></p>

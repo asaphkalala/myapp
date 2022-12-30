@@ -1,7 +1,7 @@
 {
   "name": "03.1.a-lab2",
   "version": "1.0.0",
-  "description": "# lab 3",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,11 +18,7 @@
     "express-validator": "^6.14.2",
     "mysql": "^2.18.1",
     "pug": "^3.0.2",
-    "req": "^0.1.4"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.doc.gold.ac.uk/akala001/db-lab3.git"
-  },
-  "devDependencies": {}
+    "req": "^0.1.4",
+    "request": "^2.9.202"
+  }
 }

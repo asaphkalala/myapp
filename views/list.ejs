@@ -6,13 +6,32 @@
   </head>
   <body>
     <h1><%=shopName%> Shop</h1>
-    <h2>Here are the books that we sell:</h2>
-    <ul>
-      <% availableBooks.forEach(function(book) { %>
-        <li><%= book.name %>, £<%=book.price%> </li>
-      <% }) %>
-    </ul>
-    <!-- Redirects to home page -->
+    <h2>Here are the foods that are stored in the database:</h2>
+    <table id = "myTable">
+        <tr>
+            <th>Name </th>
+            <th>Typical values per</th>
+            <th>Unit of the typical value </th>
+            <th>Carbs </th>
+            <th>Fat </th>
+            <th>Protein </th>
+            <th>Salt </th>
+            <th>Sugar </th>
+        </tr>
+        <% availableFood.forEach(function(food) { %>
+            <tr>
+                <td><%=food.name%></td>
+                <td><%=food.values_per%></td>
+                <td><%=food.unit_value%></td>
+                <td><%=food.carbs%></td>
+                <td><%=food.fat%></td>
+                <td><%=food.protein%></td>
+                <td><%=food.salt%></td>
+                <td><%=food.sugar%></td>
+            </tr>
+        <% }) %>
+
+    </table>
     <p><a href="/">home page</a></p>
     </body>
-</html>
+</html> 

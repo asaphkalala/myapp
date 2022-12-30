@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Update food to <%=shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="main.css" />
+  </head>
+  <body>
+    <h1><%=shopName%>: Update food</h1>
+    <!-- Users's input to this form will update the exsisting record in the database with the newly inputted data-->
+    <form method="POST" action="/update-food">
+        <p><input id="id" type="hidden" name="id" value="<%= availableFood[0].foodID %>" required /></p>
+        <p>Name: <input id="name" type="text" name="name" value="<%= availableFood[0].name %>" required /></p>
+        <p>Typical values per: <input id="values_per" type="text" name="values_per" value="<%= availableFood[0].values_per %>" required/></p>
+        <p>Unit of the typical value: <input id="unit_value" type="text" name="unit_value" value="<%= availableFood[0].unit_value %>" required/></p>
+        <p>Carbs: <input id="carbs" type="text" name="carbs" value="<%= availableFood[0].carbs %>" required/></p>
+        <p>Fat : <input id="fat" type="text" name="fat" value="<%= availableFood[0].fat %>"required /></p>
+        <p>Protein: <input id="protein" type="text" name="protein" value="<%= availableFood[0].protein %>" required/></p>
+        <p>Salt: <input id="salt" type="text" name="salt" value="<%= availableFood[0].salt %>" required/></p>
+        <p>Sugar: <input id="sugar" type="text" name="sugar" value="<%= availableFood[0].sugar %>" required/></p>
+        <input type="submit" value="Update Food" />
+      </form>
+    <!-- Redirects to home page -->
+    <p><a href="/">home page</a></p>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Welcome to <%=shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="main.css" />
+  </head>
+  <body>
+    <h1><%=shopName%> Shop</h1>
+    <h2>Here are the foods that are stored in the database:</h2>
+    <!-- table to display my data  -->
+    <table id = "myTable">
+        <tr>
+            <th>Name </th>
+            <th>Typical values per </th>
+            <th>Unit of the typical value </th>
+            <th>Carbs </th>
+            <th>Fat </th>
+            <th>Protein </th>
+            <th>Salt </th>
+            <th>Sugar </th>
+            <th>Action</th>
+            
+        </tr>
+        <!-- loop for showing the searched item -->
+        <% for(var i = 0; i<availableFood.length;i++){ %>
+            <tr>
+                <td><%=availableFood[i].name%></td>
+                <td><%=availableFood[i].values_per%></td>
+                <td><%=availableFood[i].unit_value%></td>
+                <td><%=availableFood[i].carbs%></td>
+                <td><%=availableFood[i].fat%></td>
+                <td><%=availableFood[i].protein%></td>
+                <td><%=availableFood[i].salt%></td>
+                <td><%=availableFood[i].sugar%></td>
+                <!-- links to delete and update responses in main.js -->
+                                                                                <!-- also on click promt message will show if they really want to delete said food item -->
+                <td> <a href="/delete-food?id=<%=availableFood[i].foodID %>" onclick="if (confirm('Are you sure about deleting the selected item?')){return true;}else{event.stopPropagation(); event.preventDefault();};" title="Link Title"> Delete </a> 
+                     <a href="/update-food?id=<%=availableFood[i].foodID %>"> Update </a> 
+                </td>
+
+            </tr>
+        <% } %>
+
+    </table>
+    <p><a href="/">home page</a></p>
+    </body>
+</html> 

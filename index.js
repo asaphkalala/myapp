@@ -7,6 +7,7 @@ const mysql = require('mysql');
 var validator = require ('express-validator');
 const expressSanitizer = require('express-sanitizer');
 
+//test
 // Create the express application object
 const app = express()
 const port = 8000
@@ -29,9 +30,9 @@ app.use(express.static(__dirname + '/public'));
 // Define the database connection
 const db = mysql.createConnection ({
     host: 'localhost',
-    user: 'appuser',
-    password: 'app2027',
-    database: 'myBookshop'
+    user: 'a',
+    password: 'a',
+    database: 'myFoodshop'
 });
 // Connect to the database
 db.connect((err) => {
@@ -55,7 +56,7 @@ app.set('view engine', 'ejs');
 app.engine('html', ejs.renderFile);
 
 // Define our data
-var shopData = {shopName: "Bertie's Books"}
+var shopData = {shopName: "Bertie's Foodstore"}
 
 // Requires the main.js file inside the routes folder passing in the Express app and data as arguments.  All the routes will go in this file
 require("./routes/main")(app, shopData);
