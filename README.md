@@ -16,4 +16,7 @@ API: There is a basic API displayed on '/api' route listing all foods stored in 
 
 Form Validation: All form data has validations, e.g. password length, email validation, integer data is integer and etc
 
+![food home](https://user-images.githubusercontent.com/83978332/212976329-a8a64d33-4c91-4b8d-8608-0851cb7ea70a.jpg)
+home page
+
 Grade: Upper Second Class (68%)
