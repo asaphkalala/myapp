@@ -19,4 +19,27 @@ Form Validation: All form data has validations, e.g. password length, email vali
 ![food home](https://user-images.githubusercontent.com/83978332/212976329-a8a64d33-4c91-4b8d-8608-0851cb7ea70a.jpg)
 home page
 
+![about](https://user-images.githubusercontent.com/83978332/212976649-8c0c41c0-e1d1-42e5-b0af-aec8ede00b5e.jpg)
+about
+
+![register](https://user-images.githubusercontent.com/83978332/212977189-6c3dc52f-0ddc-420e-986c-e2da2ae5ce06.jpg)
+
+![error](https://user-images.githubusercontent.com/83978332/212977248-63481852-c3c3-4ef2-ae3c-4d40587e1bf3.jpg)
+error
+
+![add food](https://user-images.githubusercontent.com/83978332/212976732-4d61d92b-3dec-4148-977c-913aa054b967.jpg)
+add food
+
+![added food successful](https://user-images.githubusercontent.com/83978332/212976804-951480a5-d8d1-4884-b229-d9649db14673.jpg)
+add food successful
+
+![list added food](https://user-images.githubusercontent.com/83978332/212976877-ab5402f1-526b-4974-abc6-92f2b855c27c.jpg)
+list of added food
+
+![update-delete](https://user-images.githubusercontent.com/83978332/212977004-705126ee-d975-43e7-bdbd-fcc143e8d59d.jpg)
+update/delete
+
+![logged out](https://user-images.githubusercontent.com/83978332/212977308-8432329c-9b4d-403f-b9d8-89e875ddb8ba.jpg)
+logout
+
 Grade: Upper Second Class (68%)
