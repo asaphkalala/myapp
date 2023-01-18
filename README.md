@@ -1,6 +1,6 @@
-# my app
+# My Food Buddy App! 
 
-Tasked with creating an food app:
+Tasked with creating an food app. This assignment was worth 15% of the entire module of Databases and the Web:
 
 Homepage: Displays name of the web application and display links to other pages or a navigation bar that contains links to other pages.
 
